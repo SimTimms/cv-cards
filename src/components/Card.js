@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Tilt from 'react-parallax-tilt';
-import { Typography, Slide, Fade } from '@mui/material';
+import { Typography, Slide } from '@mui/material';
 import InfoPanel from './InfoPanel';
 import moment from 'moment';
+import { IMG_INDEX } from '../data/imgIndex';
+
 export default function Card({ card, delay, cardsArr, setCardsArr }) {
   const [isShown, setIsShown] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -12,6 +14,19 @@ export default function Card({ card, delay, cardsArr, setCardsArr }) {
     }, 50 * delay);
   }, [delay]);
 
+  function yearsExp(firstY, lastY) {
+    if (firstY === null || lastY === null) {
+      return '';
+    }
+    const first = moment(firstY);
+    const last = moment(lastY);
+    let diff = last.diff(first, 'years');
+    if (diff === 0) {
+      diff = last.diff(first, 'months');
+      return `${diff} Month${diff !== 1 ? 's' : ''}`;
+    }
+    return `${diff} Year${diff !== 1 ? 's' : ''}`;
+  }
   return !isShown ? null : (
     <Slide direction="left" in={true} mountOnEnter unmountOnExit>
       <div
@@ -55,7 +70,9 @@ export default function Card({ card, delay, cardsArr, setCardsArr }) {
           >
             <div
               style={{
-                backgroundImage: `url(${card.img})`,
+                backgroundImage: `url(${
+                  IMG_INDEX[card.name] ? IMG_INDEX[card.name].img : null
+                })`,
                 paddingTop: isCollapsed ? 50 : 50,
                 backgroundSize: card.imgSize === 'cover' ? 'cover' : 'contain',
                 backgroundRepeat: 'no-repeat',
@@ -63,21 +80,48 @@ export default function Card({ card, delay, cardsArr, setCardsArr }) {
               }}
             ></div>
             <Typography variant="h5" align="center">
-              {card.title}
+              {card.name}
             </Typography>
             <Typography variant="body2" align="center">
-              {card.lastUsed &&
-                `Last Used: ${
-                  card.lastUsed ? moment(card.lastUsed).fromNow() : ''
-                }`}
+              {`${yearsExp(card.firstUsed, card.lastUsed)}`}
             </Typography>
-            <Typography variant="body2" align="center">
-              {card.firstUsed &&
-                `First Used: ${
-                  card.firstUsed ? moment(card.firstUsed).fromNow() : ''
-                }`}
-            </Typography>
-            <InfoPanel details={card.description} isCollapsed={isCollapsed} />
+
+            <div
+              style={{
+                width: '100%',
+                marginBottom: 8,
+                marginTop: 8,
+              }}
+            ></div>
+            {card.tech && (
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {card.tech.map((tech, index) => (
+                  <img
+                    src={tech.img}
+                    style={{
+                      height: 20,
+                      maxHeight: 20,
+                      minHeight: 20,
+                      padding: 5,
+                    }}
+                    key={`img_${index}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            <InfoPanel
+              details={card.description}
+              isCollapsed={isCollapsed}
+              hasInfo={card.description !== '' && card.description}
+            />
           </div>
         </Tilt>
       </div>

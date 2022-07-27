@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Grow, Typography } from '@mui/material';
 
-export default function InfoPanel({ details, isCollapsed }) {
-  const [isShown, setIsShown] = useState(false);
-
+export default function InfoPanel({ details, isCollapsed, hasInfo }) {
+  if (hasInfo && isCollapsed) {
+    return (
+      <Typography
+        variant="body2"
+        align="center"
+        style={{ textDecoration: 'underline' }}
+      >
+        Read More
+      </Typography>
+    );
+  }
   return (
     <Grow in={!isCollapsed}>
       <div
